@@ -12,4 +12,5 @@ public interface RoleService {
     Role getRole(Long id);
 
     List<Role> getRoles();
+    Role getName();
 }

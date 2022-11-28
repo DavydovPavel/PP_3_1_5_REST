@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import ru.kata.spring.boot_security.demo.models.Users;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 
 @Controller
-@Transactional
 public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
@@ -24,14 +24,17 @@ public class AdminController {
 
     @GetMapping("/admin/users")
     public String listUsers(Model model) {
+        Users user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("users", userService.listUsers());
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.getRoles());
         return "allUsers";
     }
 
     @GetMapping(value = "/admin/users/add")
     public String addUser(@ModelAttribute("user") Users user, Model model) {
         model.addAttribute("roles", roleService.getRoles());
-        return "add";
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/admin/users")
@@ -42,7 +45,7 @@ public class AdminController {
                 user.addRole(roleService.getRole(roleId));
             }
         } else {
-            user.addRole(roleService.getRole(2L));
+            user.addRole(roleService.getName());
         }
         userService.add(user);
         return "redirect:/admin/users";
@@ -57,16 +60,15 @@ public class AdminController {
 
     @PostMapping("admin/users/{id}")
     public String updateUser(@ModelAttribute("user") Users user,
-                             @PathVariable("id") long id,
                              @RequestParam(value = "index", required = false) Long[] identifiers) {
         if (identifiers != null) {
             for (Long roleId : identifiers) {
                 user.addRole(roleService.getRole(roleId));
             }
         } else {
-            user.addRole(roleService.getRole(2L));
+            user.addRole(roleService.getName());
         }
-        userService.updateUserByID(user, id);
+        userService.updateUser(user);
         return "redirect:/admin/users";
     }
 

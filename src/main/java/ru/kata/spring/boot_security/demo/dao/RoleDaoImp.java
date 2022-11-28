@@ -9,7 +9,6 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-@Transactional
 public class RoleDaoImp implements RoleDao {
 
     @PersistenceContext
@@ -28,6 +27,10 @@ public class RoleDaoImp implements RoleDao {
     @Override
     public void deleteRoleByID(long id) {
         entityManager.remove(entityManager.find(Role.class, id));
+    }
+    @Override
+    public Role getName(String name) {
+        return entityManager.find(Role.class, name);
     }
 
     @Override

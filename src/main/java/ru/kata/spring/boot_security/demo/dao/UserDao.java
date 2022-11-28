@@ -14,7 +14,7 @@ public interface UserDao {
 
     void deleteUserByID(long id);
 
-    void updateUserByID(Users updateUser, long id);
+    void updateUser(Users updateUser);
 
     Users getName(String nickName);
 }
